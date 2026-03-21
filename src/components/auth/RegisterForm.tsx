@@ -135,7 +135,7 @@ export default function RegisterForm() {
         <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center overflow-hidden">
           <img
             src="/icon/logo.png"
-            alt="Company-Admin Logo"
+            alt="HisabKitab Logo"
             className="h-full w-full object-contain"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -152,7 +152,7 @@ export default function RegisterForm() {
         Create Super Admin Account
       </h1>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400 text-center">
-        Register for Company-Admin Super Admin Dashboard
+        Register for HisabKitab Super Admin Dashboard
       </p>
       <div className="mb-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
         <p className="text-xs text-blue-700 dark:text-blue-300 text-center">

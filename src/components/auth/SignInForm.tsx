@@ -101,7 +101,7 @@ export default function SignInForm() {
         <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center overflow-hidden">
           <img
             src="/icon/logo.png"
-            alt="Company-Admin Logo"
+            alt="HisabKitab Logo"
             className="h-full w-full object-contain"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -115,7 +115,7 @@ export default function SignInForm() {
         </div>
       </Link>
       <h1 className="mb-2  mt-2 text-2xl font-bold text-gray-800 dark:text-white text-center">
-        Welcome to Company-Admin
+        Welcome to HisabKitab
       </h1>
       <p className="mb-8 text-sm text-gray-500 dark:text-gray-400 text-center">
         Securely access your dashboard

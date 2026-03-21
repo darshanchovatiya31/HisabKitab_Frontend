@@ -17,7 +17,7 @@ export default function CompaniesPage() {
   const [limit] = useState(10);
   const [showModal, setShowModal] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
-  const [formData, setFormData] = useState({ name: '', address: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', address: '', mobile: '', description: '', email: '', password: '' });
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -75,7 +75,7 @@ export default function CompaniesPage() {
 
   const handleCreate = () => {
     setEditingCompany(null);
-    setFormData({ name: '', address: '', email: '', password: '' });
+    setFormData({ name: '', address: '', mobile: '', description: '', email: '', password: '' });
     setShowModal(true);
   };
 
@@ -88,6 +88,8 @@ export default function CompaniesPage() {
         setFormData({
           name: companyData.name,
           address: companyData.address || '',
+          mobile: companyData.mobile || '',
+          description: companyData.description || '',
           email: companyData.userEmail || '',
           password: ''
         });
@@ -97,6 +99,8 @@ export default function CompaniesPage() {
         setFormData({
           name: company.name,
           address: company.address || '',
+          mobile: company.mobile || '',
+          description: company.description || '',
           email: company.userEmail || '',
           password: ''
         });
@@ -108,6 +112,8 @@ export default function CompaniesPage() {
       setFormData({
         name: company.name,
         address: company.address || '',
+        mobile: company.mobile || '',
+        description: company.description || '',
         email: company.userEmail || '',
         password: ''
       });
@@ -133,22 +139,27 @@ export default function CompaniesPage() {
           updateData.password = formData.password.trim();
         }
 
+        updateData.description = formData.description;
+        updateData.mobile = formData.mobile;
+
         await apiService.updateCompany(updateData);
         swal.success('Success', 'Company updated successfully');
         setShowModal(false);
         setEditingCompany(null);
-        setFormData({ name: '', address: '', email: '', password: '' });
+        setFormData({ name: '', address: '', mobile: '', description: '', email: '', password: '' });
         fetchCompanies();
       } else {
         await apiService.createCompany({
           name: formData.name,
           address: formData.address,
+          mobile: formData.mobile,
+          description: formData.description,
           email: formData.email,
           password: formData.password,
         });
         swal.success('Success', 'Company created successfully');
         setShowModal(false);
-        setFormData({ name: '', address: '', email: '', password: '' });
+        setFormData({ name: '', address: '', mobile: '', description: '', email: '', password: '' });
         fetchCompanies();
       }
     } catch (error: any) {
@@ -357,7 +368,7 @@ export default function CompaniesPage() {
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                     <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      Company Name
+                      Company
                     </th>
                     <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                       Address
@@ -388,12 +399,15 @@ export default function CompaniesPage() {
                             {company.userEmail}
                           </div>
                         )}
+                        <div className="text-sm text-gray-900 dark:text-white">
+                          {company.mobile || (
+                            <span className="text-gray-400 dark:text-gray-600">None</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">
-                          {company.address || (
-                            <span className="text-gray-400 dark:text-gray-600">-</span>
-                          )}
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate max-w-[150px]">
+                          {company.address || "-"}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -579,6 +593,33 @@ export default function CompaniesPage() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
                     placeholder={editingCompany ? "Leave blank to keep current email" : ""}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Mobile Number
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.mobile}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^\d]/g, '');
+                      setFormData({ ...formData, mobile: value });
+                    }}
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
+                    placeholder="Enter mobile number"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
+                    placeholder="Enter company description"
                   />
                 </div>
                 <div>

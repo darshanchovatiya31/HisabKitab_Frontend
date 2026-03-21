@@ -6,8 +6,8 @@ export default function Register() {
   return (
     <>
       <PageMeta
-        title="Company-Admin Register | Create Super Admin Account"
-        description="Register for Company-Admin Super Admin Panel to access company management tools."
+        title="HisabKitab Register | Create Super Admin Account"
+        description="Register for HisabKitab Super Admin Panel to access company management tools."
       />
       <AuthLayout>
         <RegisterForm />

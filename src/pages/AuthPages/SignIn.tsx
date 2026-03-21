@@ -6,8 +6,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Company-Admin Sign In | Professional Dashboard"
-        description="Sign in to the Company-Admin Dashboard for secure access to company management tools."
+        title="HisabKitab Sign In | Professional Bookkeeping"
+        description="Sign in to the HisabKitab Dashboard for secure access to company management tools."
       />
       <AuthLayout>
         <SignInForm />

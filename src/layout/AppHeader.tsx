@@ -54,7 +54,7 @@ const AppHeader: React.FC = () => {
             <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
               <img 
                 src="/icon/logo.png" 
-                alt="Company-Admin Logo" 
+                alt="HisabKitab Logo" 
                 className="h-full w-full object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;

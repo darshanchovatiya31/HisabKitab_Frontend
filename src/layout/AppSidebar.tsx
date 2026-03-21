@@ -5,8 +5,8 @@ import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
 import swal from '../utils/swalHelper';
 
-// Company-Admin Logo Component
-const CompanyAdminLogo = () => {
+// HisabKitab Logo Component
+const HisabKitabLogo = () => {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
     // Try fallback paths
@@ -24,7 +24,7 @@ const CompanyAdminLogo = () => {
     <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
       <img
         src="/icon/logo.png"
-        alt="Company-Admin Logo"
+        alt="HisabKitab Logo"
         className="h-full w-full object-contain"
         onError={handleImageError}
       />
@@ -357,10 +357,10 @@ const AppSidebar: React.FC = () => {
           }`}
       >
         <Link to="/" onClick={handleLinkClick} className="flex items-center gap-3">
-          <CompanyAdminLogo />
+          <HisabKitabLogo />
           {(isExpanded || isHovered || isMobileOpen) && (
             <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-              Company Admin
+              HisabKitab
             </span>
           )}
         </Link>

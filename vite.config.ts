@@ -21,9 +21,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.png', 'favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'Company-Admin - Professional Dashboard',
-        short_name: 'Company-Admin',
-        description: 'Professional Company Management System',
+        name: 'HisabKitab - Professional Bookkeeping',
+        short_name: 'HisabKitab',
+        description: 'Professional Bookkeeping and Management System',
         theme_color: '#0891b2',
         background_color: '#ffffff',
         display: 'standalone',

@@ -81,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ onClick, onToggle }) => {
             <img
               className="h-8 w-8 rounded-full object-contain"
               src="/favicon.png"
-              alt="Company-Admin Logo"
+              alt="HisabKitab Logo"
             />
           </Link>
 

@@ -47,6 +47,8 @@ export interface Company {
   name: string;
   email?: string;
   address?: string;
+  mobile?: string;
+  description?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -193,7 +195,7 @@ class ApiService {
     });
   }
 
-  async createCompany(data: { name: string; address?: string; email: string; password: string }): Promise<ApiResponse<{ company: Company; user: User }>> {
+  async createCompany(data: { name: string; address?: string; mobile?: string; description?: string; email: string; password: string }): Promise<ApiResponse<{ company: Company; user: User }>> {
     return this.request('/companies', {
       method: 'POST',
       body: JSON.stringify(data)
@@ -206,7 +208,7 @@ class ApiService {
     });
   }
 
-  async updateCompany(data: { id: string; name?: string; address?: string; isActive?: boolean; email?: string; password?: string }): Promise<ApiResponse<{ company: Company }>> {
+  async updateCompany(data: { id: string; name?: string; address?: string; mobile?: string; description?: string; isActive?: boolean; email?: string; password?: string }): Promise<ApiResponse<{ company: Company }>> {
     return this.request('/companies/update', {
       method: 'POST',
       body: JSON.stringify(data)
