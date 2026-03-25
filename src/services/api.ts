@@ -17,12 +17,79 @@ export interface PaginationParams {
   sortOrder?: 'asc' | 'desc';
 }
 
+/** Aggregated money block for sales */
+export interface DashboardSalesSummary {
+  count: number;
+  totalAmount: number;
+  totalPaid: number;
+  totalPending: number;
+}
+
+export interface DashboardExpensesSummary {
+  count: number;
+  totalAmount: number;
+}
+
+export interface DashboardReceivedSummary {
+  count: number;
+  totalAmount: number;
+}
+
+/** Returned shape depends on role — see dashboard.controller.js */
 export interface DashboardStats {
+  role?: 'SUPER_ADMIN' | 'COMPANY';
   totalCompanies?: number;
   activeCompanies?: number;
   inactiveCompanies?: number;
-  recentCompanies?: any[];
   totalUsers?: number;
+  partyCount?: number;
+  sales?: DashboardSalesSummary;
+  expenses?: DashboardExpensesSummary;
+  received?: DashboardReceivedSummary;
+  pendingSalesCount?: number;
+  /** Super Admin: collected on sales minus expenses */
+  netPosition?: number;
+  /** Company: collected on sales minus expenses */
+  netAfterExpenses?: number;
+  recentCompanies?: any[];
+  recentSales?: any[];
+  recentExpenses?: any[];
+  recentPayments?: any[];
+  company?: User;
+  partyActiveCount?: number;
+}
+
+export type AnalyticsRange = 'week' | 'month' | 'year' | 'all';
+
+export interface AnalyticsBucketRow {
+  key: string;
+  label: string;
+  salesBilled: number;
+  saleCount: number;
+  expenses: number;
+  expenseCount: number;
+  paymentsReceived: number;
+  paymentCount: number;
+  netInflow: number;
+}
+
+export interface CompanyAnalyticsData {
+  range: AnalyticsRange;
+  bucket: 'day' | 'month';
+  periodLabel: string;
+  rangeStart: string | null;
+  rangeEnd: string;
+  summary: {
+    salesBilled: number;
+    paymentsReceived: number;
+    expenses: number;
+    netInflow: number;
+    outstanding: number;
+    saleLines: number;
+    expenseLines: number;
+    paymentRecords: number;
+  };
+  series: AnalyticsBucketRow[];
 }
 
 export type UserRole = 'SUPER_ADMIN' | 'COMPANY';
@@ -52,6 +119,199 @@ export interface Company {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+/** Populated company on party (Super Admin list) */
+export interface PartyCompanyInfo {
+  _id: string;
+  name: string;
+  email?: string;
+  mobile?: string;
+  address?: string;
+  isActive?: boolean;
+}
+
+export interface Party {
+  _id: string;
+  companyId: string | PartyCompanyInfo;
+  name: string;
+  address?: string;
+  mobile?: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaginatedParties {
+  docs: Party[];
+  totalDocs: number;
+  limit: number;
+  page: number;
+  totalPages: number;
+  pagingCounter?: number;
+  hasPrevPage?: boolean;
+  hasNextPage?: boolean;
+  prevPage?: number | null;
+  nextPage?: number | null;
+}
+
+export interface SalePartyInfo {
+  _id: string;
+  name: string;
+  mobile?: string;
+  address?: string;
+  isActive?: boolean;
+}
+
+export interface SaleCompanyInfo {
+  _id: string;
+  name: string;
+  email?: string;
+  mobile?: string;
+  isActive?: boolean;
+}
+
+export interface Sale {
+  _id: string;
+  companyId: string | SaleCompanyInfo;
+  partyId: string | SalePartyInfo;
+  saleDate: string;
+  designNumber: string;
+  card: string;
+  workType: string;
+  hook: string;
+  pricePerUnit: number;
+  amount: number;
+  /** Amount received via Received Payments (FIFO). Omitted on legacy rows → treat as 0 */
+  paidAmount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Pending-sales API includes computed pending balance */
+export interface PendingSaleRow extends Sale {
+  paidAmount: number;
+  pendingAmount: number;
+}
+
+export interface PaginatedSales {
+  docs: Sale[];
+  totalDocs: number;
+  limit: number;
+  page: number;
+  totalPages: number;
+  pagingCounter?: number;
+  hasPrevPage?: boolean;
+  hasNextPage?: boolean;
+  prevPage?: number | null;
+  nextPage?: number | null;
+}
+
+/** Must match Backend/models/expense.model.js EXPENSE_CATEGORIES */
+export const EXPENSE_CATEGORY_KEYS = [
+  'EMPLOYEE_SALARY',
+  'TEA_SNACKS',
+  'LIGHT_BILL',
+  'RENT',
+  'STATIONERY',
+  'INTERNET_PHONE',
+  'TRANSPORT',
+  'MAINTENANCE',
+  'MARKETING',
+  'OTHER',
+] as const;
+
+export type ExpenseCategory = (typeof EXPENSE_CATEGORY_KEYS)[number];
+
+export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
+  EMPLOYEE_SALARY: 'Employee salary',
+  TEA_SNACKS: 'Tea & snacks',
+  LIGHT_BILL: 'Light / electricity',
+  RENT: 'Rent',
+  STATIONERY: 'Stationery',
+  INTERNET_PHONE: 'Internet & phone',
+  TRANSPORT: 'Transport',
+  MAINTENANCE: 'Maintenance',
+  MARKETING: 'Marketing',
+  OTHER: 'Other',
+};
+
+export interface Expense {
+  _id: string;
+  companyId: string | SaleCompanyInfo;
+  expenseDate: string;
+  category: ExpenseCategory;
+  title: string;
+  notes: string;
+  amount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaginatedExpenses {
+  docs: Expense[];
+  totalDocs: number;
+  limit: number;
+  page: number;
+  totalPages: number;
+  pagingCounter?: number;
+  hasPrevPage?: boolean;
+  hasNextPage?: boolean;
+  prevPage?: number | null;
+  nextPage?: number | null;
+}
+
+/** Match Backend/models/receivedPayment.model.js */
+export const PAYMENT_METHOD_KEYS = [
+  'CASH',
+  'UPI',
+  'BANK_TRANSFER',
+  'CHEQUE',
+  'TDS',
+  'OTHER',
+] as const;
+
+export type PaymentMethod = (typeof PAYMENT_METHOD_KEYS)[number];
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  CASH: 'Cash',
+  UPI: 'UPI',
+  BANK_TRANSFER: 'Bank transfer',
+  CHEQUE: 'Cheque',
+  TDS: 'TDS',
+  OTHER: 'Other',
+};
+
+export interface PaymentAllocation {
+  saleId: string;
+  amount: number;
+}
+
+export interface ReceivedPayment {
+  _id: string;
+  companyId: string;
+  partyId: string | SalePartyInfo;
+  paymentDate: string;
+  paymentMethod: PaymentMethod;
+  amount: number;
+  notes: string;
+  allocations: PaymentAllocation[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaginatedReceivedPayments {
+  docs: ReceivedPayment[];
+  totalDocs: number;
+  limit: number;
+  page: number;
+  totalPages: number;
+  pagingCounter?: number;
+  hasPrevPage?: boolean;
+  hasNextPage?: boolean;
+  prevPage?: number | null;
+  nextPage?: number | null;
 }
 
 class ApiService {
@@ -94,6 +354,11 @@ class ApiService {
       
       if (!response.ok) {
         throw new Error(data.message || `Request failed: ${response.status}`);
+      }
+
+      // Backend often returns HTTP 200 with { status: 200, message, data: 0 } for validation/auth failures
+      if (data && typeof data === 'object' && data.status === 200 && data.data === 0) {
+        throw new Error(data.message || 'Request failed');
       }
       
       return data;
@@ -187,6 +452,16 @@ class ApiService {
     });
   }
 
+  /** Company analytics — weekly / monthly / yearly / all-time series */
+  async getCompanyAnalytics(
+    range: AnalyticsRange = 'month'
+  ): Promise<ApiResponse<CompanyAnalyticsData>> {
+    return this.request('/analytics/company', {
+      method: 'POST',
+      body: JSON.stringify({ range }),
+    });
+  }
+
   // Companies
   async getCompanies(params: PaginationParams & { isActive?: string | boolean } = {}): Promise<ApiResponse> {
     return this.request('/companies/list', {
@@ -227,6 +502,255 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify({ id })
     });
+  }
+
+  // Parties (company users only)
+  async createParty(data: {
+    name: string;
+    address?: string;
+    mobile?: string;
+    description?: string;
+    isActive?: boolean;
+  }): Promise<ApiResponse<{ party: Party }>> {
+    return this.request('/parties', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getParties(
+    params: PaginationParams & { isActive?: 'all' | 'active' | 'inactive' | boolean | string } = {}
+  ): Promise<ApiResponse<PaginatedParties>> {
+    return this.request('/parties/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  async getPartyById(id: string): Promise<ApiResponse<{ party: Party }>> {
+    return this.request(`/parties/${id}`, { method: 'GET' });
+  }
+
+  async updateParty(data: {
+    id: string;
+    name?: string;
+    address?: string;
+    mobile?: string;
+    description?: string;
+    isActive?: boolean;
+  }): Promise<ApiResponse<{ party: Party }>> {
+    return this.request('/parties/update', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteParty(id: string): Promise<ApiResponse> {
+    return this.request('/parties/delete', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  async togglePartyStatus(id: string): Promise<ApiResponse<{ party: Party }>> {
+    return this.request('/parties/toggle-status', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  /** Super Admin: all parties across companies (uses /api/admin) */
+  async adminListParties(
+    params: PaginationParams & {
+      isActive?: 'all' | 'active' | 'inactive' | boolean | string;
+      companyId?: string;
+    } = {}
+  ): Promise<ApiResponse<PaginatedParties>> {
+    return this.request('/admin/parties/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  // Sales (company users)
+  async createSale(data: {
+    partyId: string;
+    saleDate: string;
+    designNumber?: string;
+    card?: string;
+    workType?: string;
+    hook?: string;
+    pricePerUnit?: number;
+    amount: number;
+  }): Promise<ApiResponse<{ sale: Sale }>> {
+    return this.request('/sales', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getSales(
+    params: PaginationParams & {
+      partyId?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {}
+  ): Promise<ApiResponse<PaginatedSales>> {
+    return this.request('/sales/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  async getSaleById(id: string): Promise<ApiResponse<{ sale: Sale }>> {
+    return this.request(`/sales/${id}`, { method: 'GET' });
+  }
+
+  async updateSale(data: {
+    id: string;
+    partyId?: string;
+    saleDate?: string;
+    designNumber?: string;
+    card?: string;
+    workType?: string;
+    hook?: string;
+    pricePerUnit?: number;
+    amount?: number;
+  }): Promise<ApiResponse<{ sale: Sale }>> {
+    return this.request('/sales/update', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSale(id: string): Promise<ApiResponse> {
+    return this.request('/sales/delete', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  /** Super Admin: all sales */
+  async adminListSales(
+    params: PaginationParams & {
+      companyId?: string;
+      partyId?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {}
+  ): Promise<ApiResponse<PaginatedSales>> {
+    return this.request('/admin/sales/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  // Expenses (company users)
+  async createExpense(data: {
+    expenseDate: string;
+    category: ExpenseCategory;
+    title?: string;
+    notes?: string;
+    amount: number;
+  }): Promise<ApiResponse<{ expense: Expense }>> {
+    return this.request('/expenses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getExpenses(
+    params: PaginationParams & {
+      category?: ExpenseCategory | 'all';
+      dateFrom?: string;
+      dateTo?: string;
+    } = {}
+  ): Promise<ApiResponse<PaginatedExpenses>> {
+    return this.request('/expenses/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  async getExpenseById(id: string): Promise<ApiResponse<{ expense: Expense }>> {
+    return this.request(`/expenses/${id}`, { method: 'GET' });
+  }
+
+  async updateExpense(data: {
+    id: string;
+    expenseDate?: string;
+    category?: ExpenseCategory;
+    title?: string;
+    notes?: string;
+    amount?: number;
+  }): Promise<ApiResponse<{ expense: Expense }>> {
+    return this.request('/expenses/update', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteExpense(id: string): Promise<ApiResponse> {
+    return this.request('/expenses/delete', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    });
+  }
+
+  /** Super Admin: all expenses */
+  async adminListExpenses(
+    params: PaginationParams & {
+      companyId?: string;
+      category?: ExpenseCategory | 'all';
+      dateFrom?: string;
+      dateTo?: string;
+    } = {}
+  ): Promise<ApiResponse<PaginatedExpenses>> {
+    return this.request('/admin/expenses/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  // Received payments (company users)
+  async getPendingSalesByParty(partyId: string): Promise<
+    ApiResponse<{ sales: PendingSaleRow[]; party: Party }>
+  > {
+    return this.request('/received-payments/pending-sales', {
+      method: 'POST',
+      body: JSON.stringify({ partyId }),
+    });
+  }
+
+  async createReceivedPayment(data: {
+    partyId: string;
+    saleIds: string[];
+    paymentAmount: number;
+    paymentMethod: PaymentMethod;
+    paymentDate: string;
+    notes?: string;
+  }): Promise<ApiResponse<{ receivedPayment: ReceivedPayment }>> {
+    return this.request('/received-payments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async listReceivedPayments(
+    params: PaginationParams & {
+      partyId?: string | 'all';
+      dateFrom?: string;
+      dateTo?: string;
+    } = {}
+  ): Promise<ApiResponse<PaginatedReceivedPayments>> {
+    return this.request('/received-payments/list', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  async getReceivedPaymentById(id: string): Promise<ApiResponse<{ receivedPayment: ReceivedPayment }>> {
+    return this.request(`/received-payments/${id}`, { method: 'GET' });
   }
 
   // Backward compatibility aliases

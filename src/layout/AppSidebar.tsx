@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { LayoutDashboard, UserCircle, LogOut, Building2, ChevronDown, MoreVertical } from 'lucide-react';
+import { LayoutDashboard, UserCircle, LogOut, Building2, ChevronDown, MoreVertical, Users, Receipt, Wallet, Banknote, BarChart3 } from 'lucide-react';
 import { useSidebar } from "../context/SidebarContext";
 import { useAuth } from "../context/AuthContext";
 import swal from '../utils/swalHelper';
@@ -56,8 +56,51 @@ const getNavItems = (userRole?: string): NavItem[] => {
         icon: <Building2 />,
         name: "Companies",
         path: "/company/companies",
+      },
+      {
+        icon: <Users />,
+        name: "All parties",
+        path: "/company/all-parties",
+      },
+      {
+        icon: <Receipt />,
+        name: "All sales",
+        path: "/company/all-sales",
+      },
+      {
+        icon: <Wallet />,
+        name: "All expenses",
+        path: "/company/all-expenses",
       }
     );
+  }
+
+  if (userRole === 'COMPANY') {
+    items.push({
+      icon: <Users />,
+      name: "Parties",
+      path: "/company/parties",
+    });
+    items.push({
+      icon: <Receipt />,
+      name: "Sales",
+      path: "/company/sales",
+    });
+    items.push({
+      icon: <Banknote />,
+      name: "Received payments",
+      path: "/company/received-payments",
+    });
+    items.push({
+      icon: <BarChart3 />,
+      name: "Analytics",
+      path: "/company/analytics",
+    });
+    items.push({
+      icon: <Wallet />,
+      name: "Expenses",
+      path: "/company/expenses",
+    });
   }
 
   // Common items (Profile only)

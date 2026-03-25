@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Admin, UserRole } from "../../services/api";
+import type { User, UserRole } from "../../services/api";
 import swal from "../../utils/swalHelper";
 
 interface AdminModalProps {
-  admin?: Admin;
+  admin?: User;
   onClose: () => void;
   onSubmit: (adminData: any) => void;
   title: string;

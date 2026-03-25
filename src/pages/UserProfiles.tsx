@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Mail, Lock, Calendar, User } from "lucide-react";
+import { useState, useEffect, type FormEvent } from "react";
+import { Eye, EyeOff, Calendar } from "lucide-react";
 import swal from '../utils/swalHelper';
 import Label from "../components/form/Label";
 import Input from "../components/form/input/InputField";
@@ -46,7 +46,7 @@ export default function UserProfiles() {
     confirm: false
   });
 
-  const [errors, setErrors] = useState({
+  const [, setErrors] = useState({
     profile: "",
     password: "",
     general: ""
@@ -158,7 +158,7 @@ export default function UserProfiles() {
   };
 
   // Handle password change
-  const handlePasswordChange = async (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(prev => ({ ...prev, password: true }));
     setErrors(prev => ({ ...prev, password: "" }));

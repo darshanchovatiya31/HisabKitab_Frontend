@@ -11,6 +11,14 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 // Company Management Pages
 import CompanyDashboard from "./pages/Company/Dashboard";
 import CompaniesPage from "./pages/Company/Companies";
+import PartiesPage from "./pages/Company/Parties";
+import AllPartiesAdmin from "./pages/Company/AllPartiesAdmin";
+import SalesPage from "./pages/Company/Sales";
+import AllSalesAdmin from "./pages/Company/AllSalesAdmin";
+import ExpensesPage from "./pages/Company/Expenses";
+import AllExpensesAdmin from "./pages/Company/AllExpensesAdmin";
+import ReceivedPaymentsPage from "./pages/Company/ReceivedPayments";
+import AnalyticsPage from "./pages/Company/Analytics";
 // import Register from "./pages/AuthPages/Register";
 
 // Protected Route Component
@@ -108,6 +116,46 @@ function AppRoutes() {
           <Route path="/company/companies" element={
             <ProtectedRoute>
               <CompaniesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/parties" element={
+            <ProtectedRoute>
+              <PartiesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/all-parties" element={
+            <ProtectedRoute>
+              <AllPartiesAdmin />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/sales" element={
+            <ProtectedRoute>
+              <SalesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/all-sales" element={
+            <ProtectedRoute>
+              <AllSalesAdmin />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/expenses" element={
+            <ProtectedRoute>
+              <ExpensesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/all-expenses" element={
+            <ProtectedRoute>
+              <AllExpensesAdmin />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/received-payments" element={
+            <ProtectedRoute>
+              <ReceivedPaymentsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/company/analytics" element={
+            <ProtectedRoute>
+              <AnalyticsPage />
             </ProtectedRoute>
           } />
         </Route>

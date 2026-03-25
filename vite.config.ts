@@ -1,7 +1,11 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from 'vite-plugin-pwa';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -127,14 +131,19 @@ export default defineConfig({
     }),
   ],
   resolve: {
-    dedupe: ['react', 'react-dom', 'react-helmet-async'],
+    // Single React instance — avoids "Invalid hook call" when a dependency bundles its own react
+    // Do NOT alias react/jsx-* to .js files — it fights Vite's dep optimizer and causes 504 Outdated Optimize Dep
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-helmet-async'],
+    alias: {
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+    },
   },
   build: {
-    // Performance optimizations
+    // Performance optimizations — do not split react into a separate chunk (can duplicate the runtime)
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router'],
           'ui-vendor': ['lucide-react'],
         },
       },
@@ -152,19 +161,20 @@ export default defineConfig({
     // Source maps for production debugging (optional)
     sourcemap: false,
   },
-  // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router', 'react-helmet-async'],
+    // Let Vite discover jsx runtimes via package exports; forcing file aliases breaks dep hash stability
+    include: [
+      'react',
+      'react-dom',
+      'react-router',
+      'react-helmet-async',
+      'react-apexcharts',
+      'apexcharts',
+    ],
   },
-  // Server configuration for development
+  // Fail if 5173 is busy — a second server on another port while the browser still uses 5173 causes 504 Outdated Optimize Dep
   server: {
-    hmr: {
-      protocol: 'ws',
-      host: 'localhost',
-      port: 5173,
-    },
-    headers: {
-      'Cache-Control': 'public, max-age=31536000',
-    },
+    port: 5173,
+    strictPort: true,
   },
 });
