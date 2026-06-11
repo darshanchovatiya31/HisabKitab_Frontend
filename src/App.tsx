@@ -19,7 +19,6 @@ import ExpensesPage from "./pages/Company/Expenses";
 import AllExpensesAdmin from "./pages/Company/AllExpensesAdmin";
 import ReceivedPaymentsPage from "./pages/Company/ReceivedPayments";
 import AnalyticsPage from "./pages/Company/Analytics";
-// import Register from "./pages/AuthPages/Register";
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -160,21 +159,12 @@ function AppRoutes() {
           } />
         </Route>
 
-        {/* delete route:- Patients, Categories, Doctors & Labs, Slots, BookingHistory */}
-
         {/* Auth Layout */}
         <Route path="/signin" element={
           <PublicRoute>
             <SignIn />
           </PublicRoute>
         } />
-        {/* Super Admin Registration Route - Commented out after initial setup */}
-        {/* <Route path="/register" element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        } /> */}
-
         {/* Fallback Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>

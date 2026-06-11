@@ -54,6 +54,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initAuth();
 
+    apiService.setOnUnauthorized(() => {
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      apiService.setToken(null);
+      window.location.hash = '#/signin';
+    });
+
     // Listen for user update events
     const handleUserUpdate = () => {
       const storedUser = localStorage.getItem('user');
@@ -70,6 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     window.addEventListener('userUpdated', handleUserUpdate);
 
     return () => {
+      apiService.setOnUnauthorized(null);
       window.removeEventListener('userUpdated', handleUserUpdate);
     };
   }, []);

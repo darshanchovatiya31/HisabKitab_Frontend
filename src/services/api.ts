@@ -1,5 +1,6 @@
-// Get API URL from environment variable
-// Make sure to set VITE_API_URL in your .env file
+// Get API URL from environment variable (.env)
+// Base must be http://localhost:3300/api — NOT /api/admin
+// api.ts appends paths like /auth/login or /admin/login
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3300/api';
 
 // Types
@@ -316,14 +317,40 @@ export interface PaginatedReceivedPayments {
 
 class ApiService {
   private token: string | null = localStorage.getItem('authToken');
+  private onUnauthorized: (() => void) | null = null;
+  private unauthorizedHandled = false;
 
   public setToken(token: string | null) {
     this.token = token;
     if (token) {
+      this.unauthorizedHandled = false;
       localStorage.setItem('authToken', token);
     } else {
       localStorage.removeItem('authToken');
     }
+  }
+
+  public setOnUnauthorized(callback: (() => void) | null) {
+    this.onUnauthorized = callback;
+  }
+
+  private isSessionExpiredMessage(message: string): boolean {
+    const normalized = message.toLowerCase();
+    return (
+      normalized.includes('token expired') ||
+      normalized.includes('invalid token') ||
+      normalized.includes('invalid token or inactive user')
+    );
+  }
+
+  private handleUnauthorized() {
+    if (this.unauthorizedHandled) {
+      return;
+    }
+    this.unauthorizedHandled = true;
+    this.setToken(null);
+    localStorage.removeItem('user');
+    this.onUnauthorized?.();
   }
 
   private async request(endpoint: string, options: any = {}, baseUrl: string = API_BASE_URL) {
@@ -353,16 +380,27 @@ class ApiService {
       }
       
       if (!response.ok) {
-        throw new Error(data.message || `Request failed: ${response.status}`);
+        const message = data.message || `Request failed: ${response.status}`;
+        if (this.token && this.isSessionExpiredMessage(message)) {
+          this.handleUnauthorized();
+        }
+        throw new Error(message);
       }
 
       // Backend often returns HTTP 200 with { status: 200, message, data: 0 } for validation/auth failures
       if (data && typeof data === 'object' && data.status === 200 && data.data === 0) {
-        throw new Error(data.message || 'Request failed');
+        const message = data.message || 'Request failed';
+        if (this.token && this.isSessionExpiredMessage(message)) {
+          this.handleUnauthorized();
+        }
+        throw new Error(message);
       }
       
       return data;
     } catch (error: any) {
+      if (this.token && error?.message && this.isSessionExpiredMessage(error.message)) {
+        this.handleUnauthorized();
+      }
       console.error('API Request failed:', { url, error: error.message });
       throw error;
     }

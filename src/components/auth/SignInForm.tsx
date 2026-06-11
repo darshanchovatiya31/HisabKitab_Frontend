@@ -63,8 +63,7 @@ export default function SignInForm() {
           const userData = JSON.parse(storedUser);
           const userRole = userData.role;
 
-          // Redirect all roles to company dashboard
-          if (['SUPER_ADMIN', 'COMPANY', 'DOCTOR', 'PERSONAL_DOCTOR'].includes(userRole)) {
+          if (['SUPER_ADMIN', 'COMPANY'].includes(userRole)) {
             redirectPath = '/company/dashboard';
           }
         } catch (e) {
